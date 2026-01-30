@@ -1,0 +1,5 @@
+{
+  "name": "Pyramid Builder",
+  "description": "A vertical stacker game where you rebuild an ancient Egyptian pyramid block by block. Test your reflexes and precision.",
+  "requestFramePermissions": []
+}
