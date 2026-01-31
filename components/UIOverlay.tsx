@@ -11,16 +11,43 @@ interface UIOverlayProps {
 }
 
 const UIOverlay: React.FC<UIOverlayProps> = ({ gameState, score, highScore, initialHighScore, onStart }) => {
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
   if (gameState === GameState.PLAYING) {
     return (
       <div className="absolute top-0 left-0 w-full p-6 z-50 flex justify-between items-start pointer-events-none">
         <div className="text-white drop-shadow-md">
-           <h3 className="text-xs text-sand-300 font-bold tracking-widest uppercase">High Score</h3>
-           <p className="text-2xl font-black ancient-font">{highScore}</p>
+          <h3 className="text-xs text-sand-300 font-bold tracking-widest uppercase">High Score</h3>
+          <p className="text-2xl font-black ancient-font">{highScore}</p>
         </div>
-        <div className="text-white drop-shadow-md text-right">
-           <h3 className="text-xs text-sand-300 font-bold tracking-widest uppercase">{TEXTS.SCORE_LABEL}</h3>
-           <p className="text-4xl font-black ancient-font text-egypt-gold">{score}</p>
+
+        {/* Fullscreen Button during playing - visible but pointer-events-auto */}
+        <button
+          onClick={toggleFullscreen}
+          className="pointer-events-auto bg-black/30 hover:bg-black/50 p-2 rounded-full text-sand-300 transition-colors ml-4 order-2"
+          aria-label="Toggle Fullscreen"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <polyline points="9 21 3 21 3 15"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+        </button>
+
+        <div className="text-white drop-shadow-md text-right flex-1 order-3">
+          <h3 className="text-xs text-sand-300 font-bold tracking-widest uppercase">{TEXTS.SCORE_LABEL}</h3>
+          <p className="text-4xl font-black ancient-font text-egypt-gold">{score}</p>
         </div>
       </div>
     );
@@ -31,7 +58,21 @@ const UIOverlay: React.FC<UIOverlayProps> = ({ gameState, score, highScore, init
 
   return (
     <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-8 text-center animate-fade-in overflow-hidden">
-      
+
+      {/* Fullscreen Button in Menu/Game Over */}
+      <button
+        onClick={toggleFullscreen}
+        className="absolute top-8 right-8 z-[60] bg-white/10 hover:bg-white/20 p-3 rounded-full text-sand-300 transition-colors"
+        aria-label="Toggle Fullscreen"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <polyline points="9 21 3 21 3 15"></polyline>
+          <line x1="21" y1="3" x2="14" y2="10"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+      </button>
+
       {/* Branding Header */}
       <div className="absolute top-8 left-0 w-full text-center">
         <h2 className="text-sand-300 text-xs md:text-sm font-bold tracking-widest uppercase opacity-80">
@@ -57,25 +98,25 @@ const UIOverlay: React.FC<UIOverlayProps> = ({ gameState, score, highScore, init
             {TEXTS.TITLE}
           </h1>
           <div className="w-24 h-1 bg-sand-500 mx-auto rounded-full mb-6"></div>
-          
+
           {isGameOver && (
-             <div className="mb-8">
-               {isNewRecord ? (
-                 <div className="animate-bounce">
-                   <p className="text-yellow-400 text-lg font-bold uppercase tracking-widest mb-2 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]">
-                     🏆 New Record! 🏆
-                   </p>
-                   <p className="text-7xl text-white font-black ancient-font mb-2 drop-shadow-xl text-shadow-glow">{score}</p>
-                   <p className="text-yellow-200 text-sm">History Rewritten</p>
-                 </div>
-               ) : (
-                 <>
-                   <p className="text-sand-300 text-sm uppercase tracking-widest mb-1">Dynasty Ended</p>
-                   <p className="text-6xl text-white font-black ancient-font mb-2">{score}</p>
-                   <p className="text-sand-300 text-sm">Years Reigned</p>
-                 </>
-               )}
-             </div>
+            <div className="mb-8">
+              {isNewRecord ? (
+                <div className="animate-bounce">
+                  <p className="text-yellow-400 text-lg font-bold uppercase tracking-widest mb-2 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]">
+                    🏆 New Record! 🏆
+                  </p>
+                  <p className="text-7xl text-white font-black ancient-font mb-2 drop-shadow-xl text-shadow-glow">{score}</p>
+                  <p className="text-yellow-200 text-sm">History Rewritten</p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sand-300 text-sm uppercase tracking-widest mb-1">Dynasty Ended</p>
+                  <p className="text-6xl text-white font-black ancient-font mb-2">{score}</p>
+                  <p className="text-sand-300 text-sm">Years Reigned</p>
+                </>
+              )}
+            </div>
           )}
 
           {!isGameOver && (
@@ -86,12 +127,12 @@ const UIOverlay: React.FC<UIOverlayProps> = ({ gameState, score, highScore, init
             </div>
           )}
 
-          <button 
+          <button
             onClick={onStart}
             className={`
               group relative px-10 py-5 text-black font-bold text-xl ancient-font uppercase tracking-widest overflow-hidden transition-all hover:scale-105 active:scale-95 border-2
-              ${isNewRecord 
-                ? 'bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-300 border-white shadow-[0_0_30px_rgba(234,179,8,0.8)]' 
+              ${isNewRecord
+                ? 'bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-300 border-white shadow-[0_0_30px_rgba(234,179,8,0.8)]'
                 : 'bg-gradient-to-r from-yellow-600 to-yellow-500 border-yellow-300 shadow-[0_0_20px_rgba(234,179,8,0.5)]'}
             `}
           >
@@ -104,17 +145,17 @@ const UIOverlay: React.FC<UIOverlayProps> = ({ gameState, score, highScore, init
       <div className="text-sand-500 text-xs font-mono bg-black/40 px-3 py-1 rounded-full">
         HIGH SCORE: {highScore}
       </div>
-      
+
       {/* Branding Footer (Duplicate/Alternative position) */}
       <div className="absolute bottom-4 left-0 w-full text-center opacity-50">
-         <p className="text-[10px] text-sand-700 tracking-[0.2em] font-serif">POWERED BY FIRST TECH CHALLENGE VIETNAM</p>
+        <p className="text-[10px] text-sand-700 tracking-[0.2em] font-serif">POWERED BY FIRST TECH CHALLENGE VIETNAM</p>
       </div>
 
       {/* Confetti-like particles for new record (Simple CSS implementation) */}
       {isNewRecord && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           {[...Array(20)].map((_, i) => (
-            <div 
+            <div
               key={i}
               className="absolute w-2 h-2 bg-yellow-400 rounded-full animate-ping"
               style={{
