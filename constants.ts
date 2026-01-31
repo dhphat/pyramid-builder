@@ -23,3 +23,5 @@ export const TEXTS = {
   RESTART: "TAP TO REBUILD",
   SCORE_LABEL: "YEARS",
 };
+
+export const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbw0vRvj_nQyRWTzYAn8bClV9SR9n-ptPTXed1QZ9apSrSytYWVHm0avvjjBtKpNLPI/exec";
